@@ -1,18 +1,19 @@
 #include "SDL.h"
 
-SDL::SDL(int winW, int winH, Uint32 initFlags)
+SDL::SDL(int winW, int winH, Uint32 initFlags) : target(nullptr)
 {
 	WINW = winW;
 	WINH = winH;
 	if(!init(initFlags))
-		std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
+		std::cout << "Error initializing SDL: " << SDL_GetError() << std::endl;
 	else
-		healthy = false;
+		healthy = true;
 }
 
 SDL::~SDL()
 {
-	SDL_FreeSurface(target);
+	if (target != nullptr)
+		SDL_FreeSurface(target);
 	SDL_DestroyWindow( m_window );
     SDL_DestroyRenderer( m_renderer );
     TTF_Quit();

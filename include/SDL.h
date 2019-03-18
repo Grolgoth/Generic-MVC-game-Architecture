@@ -22,7 +22,7 @@ class SDL
 
 	private:
 		bool init(Uint32 flags);
-		bool healthy;
+		bool healthy = false;
 		int WINW;
 		int WINH;
 		SDL_Window* m_window;

@@ -59,7 +59,7 @@ void Game::mainloop()
 	{
 		SDL_Delay(settings.TICKS_PER_FRAME - elt);
 		previousGameTick += settings.TICKS_PER_FRAME - elt;
-		if (settings.TICKS_PER_FRAME - elt > 10)
+		if (settings.TICKS_PER_FRAME - elt > 1)
 			checkIfSpeedupRequired();
 		updateLoopsWithTimeToSpare(1);
 	}
@@ -79,7 +79,7 @@ void Game::checkIfSlowdownRequired()
 
 void Game::checkIfSpeedupRequired()
 {
-	if (settings.FPS > 299)
+	if (settings.FPS > 300)
 		return;
 	if (loopsWithTimeToSpare == 20)
 	{
