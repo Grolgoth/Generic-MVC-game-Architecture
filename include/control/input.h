@@ -1,8 +1,8 @@
 #ifndef SDLKEYS_H
 #define SDLKEYS_H
 #include <string>
-#include "Files/vector.h"
-#include <SDL2/SDL.h>
+#include <vector.h>
+#include <SDL.h>
 
 class Input
 {
@@ -15,24 +15,39 @@ class Input
 			int y;
 		};
 
+		struct Key
+		{
+			SDL_Scancode key;
+			int framesDown;
+			bool operator==(Key& other)
+			{
+				return other.key == key && other.framesDown == framesDown;
+			}
+		};
+
 		Input();
 
-		void input();
-		inline bool isDown(int key) {return keysDown.contains(key);}
-		inline bool wasPressedFirst(int source, int compare) {return keysDown.getIndex(source) < keysDown.getIndex(compare);}
+		void input(); //return true if game was paused / unpaused.
+		bool isDown(SDL_Scancode key);
+		//inline bool wasPressedFirst(SDL_Scancode source, SDL_Scancode compare) {return keysDown.getIndex(source) < keysDown.getIndex(compare);}
 
+		inline bool getPause() {return pause;}
 		inline Mouse getMouse() {return mouse;}
-		inline Vector<int> getKeysDown() {return keysDown;}
+		inline Vector<Key> getKeysDown() {return keysDown;}
+		inline Vector<SDL_Scancode> getNewKeysDown() {return newKeysDown;}
 		inline void setQuitRef(bool* address) {quit = address;}
 
 	private:
-		Vector<int> keysDown;
+		Vector<Key> keysDown;
+		Vector<SDL_Scancode> newKeysDown;
 		Mouse mouse;
 
 		void handleMouseButton(SDL_Event event, bool down = true);
-		void handleMouseMotion(SDL_Event event);
+		void mousePos();
 		void handleKey(SDL_Event event, bool down = true);
+		void updateFramesDown();
 		bool* quit;
+		bool pause = false;
 };
 
 #endif // SDLKEYS_H

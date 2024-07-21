@@ -1,9 +1,14 @@
 #include "input.h"
 
-Input::Input() : keysDown(true) {}
+Input::Input() : keysDown(true), newKeysDown(true)
+{
+	SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+}
 
 void Input::input()
 {
+	mousePos();
+	newKeysDown.clear();
 	SDL_Event event;
     while (SDL_PollEvent(&event))
     {
@@ -14,9 +19,6 @@ void Input::input()
 			break;
 		case SDL_KEYUP:
 			handleKey(event, false);
-			break;
-		case SDL_MOUSEMOTION:
-			handleMouseMotion(event);
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			handleMouseButton(event);
@@ -29,6 +31,15 @@ void Input::input()
 			return;
     	}
     }
+    updateFramesDown();
+}
+
+bool Input::isDown(SDL_Scancode key)
+{
+	for (int i = 0; i < keysDown.size(); i++)
+		if (keysDown.get(i).key == key)
+			return true;
+	return false;
 }
 
 void Input::handleMouseButton(SDL_Event event, bool down)
@@ -39,24 +50,52 @@ void Input::handleMouseButton(SDL_Event event, bool down)
 		mouse.rightPressed = down;
 }
 
-void Input::handleMouseMotion(SDL_Event event)
+void Input::mousePos()
 {
-	mouse.x = event.motion.x;
-	mouse.y = event.motion.y;
+	SDL_GetMouseState(&mouse.x, &mouse.y);
 }
 
 void Input::handleKey(SDL_Event event, bool down)
 {
+	SDL_Scancode scancode = event.key.keysym.scancode;
+	bool found = false;
 	if (down)
-		keysDown.add(event.key.keysym.scancode);
+	{
+		for (int i = 0; i < keysDown.size(); i++)
+		{
+			if (keysDown.get(i).key == scancode)
+			{
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+		{
+			keysDown.add(Key {scancode, 0});
+			newKeysDown.add(scancode);
+			if (SDL_GetKeyFromScancode(scancode) == SDLK_p)
+			{
+				if (*quit == 2)
+					*quit = 1;
+				else
+					*quit = 2;
+			}
+		}
+	}
 	//We don't need to free this, SDL's got our back.
 	const Uint8 *state = SDL_GetKeyboardState(nullptr);
-	for (unsigned int i = 0; i < keysDown.size(); i++)
+	for (int i = 0; i < keysDown.size(); i++)
 	{
-		if (!state[keysDown.get(i)])
+		if (!state[keysDown.get(i).key])
 		{
 			keysDown.remove(i);
 			i--;
 		}
 	}
+}
+
+void Input::updateFramesDown()
+{
+	for (int i = 0; i < keysDown.size(); i++)
+		keysDown.getptr(i)->framesDown ++;
 }

@@ -1,26 +1,62 @@
 #include "gamesettings.h"
-#include "Files/file.h"
-#include "Files/algorithmz.h"
+#include <file.h>
+#include <algorithmz.h>
 #include <iostream>
 #include "Game.h"
+#include <settingsmanager.h>
 
-void checkGameSettings()
+void checkGameSettings(bool forceNew)
 {
-	File global("../../Settings/gamesettings");
+	File global("../data/settings/gamesettings", false);
 	if (!global.exists())
 	{
 		global.create();
 		global.open();
-		global.write("[screen]\nwinw=800\nwinh=600\nfullscreen=false\n\n[graphics]\nfps=100");
+		global.write("[screen]\nwinw=800\nwinh=600\n\n[graphics]\nfps=30");
+		global.close();
+		global.open();
+		global.encode(Algorithm("x=2*x-4"));
+		global.close();
+	}
+	else if (forceNew)
+	{
+		global.open();
+		global.clear();
+		global.write("[screen]\nwinw=800\nwinh=600\n\n[graphics]\nfps=30");
+		global.close();
+		global.open();
 		global.encode(Algorithm("x=2*x-4"));
 		global.close();
 	}
 }
 
-void printSettings(GameSettings settings)
+void writeGameSetting(std::string name, std::string value)
 {
-	std::cout << "Settings loaded:\n"
-		<< "WINW: " << settings.WINW << "WINH: " << settings.WINH
-		<< "\nFullscreen: " << settings.FULLSCREEN << "\n"
-		<< "\nFPS: " << settings.FPS << std::endl;
+	checkGameSettings();
+	Encoder* encoder = new Encoder(Algorithm("x=2*x-4"), Algorithm("x=(x+4)/2"));
+	Settings* settings = SettingsManager::getSettings("../data/settings/gamesettings", true, Settings::PLAIN, encoder);
+	settings->write(name, value);
+	delete settings;
+}
+
+std::vector<std::string> getGameSettings(std::vector<std::string> keys)
+{
+	checkGameSettings();
+	Encoder* encoder = new Encoder(Algorithm("x=2*x-4"), Algorithm("x=(x+4)/2"));
+	Settings* settings = SettingsManager::getSettings("../data/settings/gamesettings", true, Settings::PLAIN, encoder);
+	std::vector<std::string> settingsList = settings->get(keys);
+	delete settings;
+	return settingsList;
+}
+
+void printSettings()
+{
+	File file("../data/settings/gamesettings");
+	file.open();
+	file.decode(Algorithm("x=2*x-4"), Algorithm("x=(x+4)/2"));
+	file.close();
+	file.open();
+	std::cout << file.getFromFile() << std::endl;
+	file.encode(Algorithm("x=2*x-4"));
+	file.close();
 }

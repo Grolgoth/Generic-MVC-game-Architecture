@@ -1,6 +1,6 @@
 #ifndef MODEL_H
 #define MODEL_H
-#include "Files/vector.h"
+#include <vector.h>
 #include "input.h"
 
 
@@ -10,7 +10,8 @@ class Model
 		Model();
 		~Model();
 
-		void update(Vector<int> keysDown, Input::Mouse mouse);
+		void update(Vector<Input::Key> keysDown, Input::Mouse mouse);
+		void cleanUp();
 
 	private:
 };

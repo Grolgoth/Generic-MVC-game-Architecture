@@ -10,7 +10,12 @@ View::~View()
 	//no need to delete our sdl instance, it should happen in a destructer higher up in the hierarchy
 }
 
-void View::render()
+void View::render(int framerate)
+{
+
+}
+
+void View::cleanUp()
 {
 
 }

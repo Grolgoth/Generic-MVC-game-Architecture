@@ -10,7 +10,12 @@ Model::~Model()
 	//dtor
 }
 
-void Model::update(Vector<int> keysDown, Input::Mouse mouse)
+void Model::update(Vector<Input::Key> keysDown, Input::Mouse mouse)
+{
+
+}
+
+void Model::cleanUp()
 {
 
 }

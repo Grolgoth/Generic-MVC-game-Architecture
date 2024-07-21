@@ -9,12 +9,15 @@ class View;
 class MvcInstance
 {
 	public:
-		MvcInstance(SDL* sdl, bool* quitref);
+		MvcInstance(SDL* sdl, bool* quitref, int* fps);
 		~MvcInstance();
 		void update();
-		void render();
+		void render(int framerate, bool* resolutionChanged);
 
 	private:
+		void applyResolutionChangeToWindow();
+
+		MvcInstance(MvcInstance& other);
 		SDL* sdl;
 		Controller* controller;
 		Model* model;

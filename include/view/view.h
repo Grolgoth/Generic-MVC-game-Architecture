@@ -10,7 +10,8 @@ class View
 		View(SDL* sdl, Model* model);
 		~View();
 
-		void render();
+		void render(int framerate);
+		void cleanUp();
 
 	protected:
 
